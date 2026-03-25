@@ -7,10 +7,10 @@ import { askBlair } from '../api/askBlair'
  * Expands into 300×400 chat panel.
  * Handles mobile keyboard via visualViewport.
  */
-export default function AskBlairWidget({ userContext = null, askBlairCount = 0, isPaid = false, maxFreeQuestions = 15, onQuestionAsked }) {
+export default function AskBlairWidget({ userContext = null, askBlairCount = 0, isPaid = false, maxFreeQuestions = 5, onQuestionAsked }) {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hey! I'm Blair. Ask me anything about content strategy, hooks, captions, or growing your brand. I'll keep it real." }
+    { role: 'assistant', content: "Hey! I'm Blair AI — your content strategist. Ask me anything about hooks, captions, what to post, or growing your brand. I'll keep it real." }
   ])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -21,6 +21,21 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
 
   const questionsUsed = askBlairCount
   const atLimit = !isPaid && questionsUsed >= maxFreeQuestions
+
+  // Simple inline markdown renderer — handles **bold** and *italic* gracefully
+  const renderMessageText = (text) => {
+    // Split on **bold** and *italic* patterns, render as styled spans
+    const parts = text.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/)
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>
+      }
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return <em key={i}>{part.slice(1, -1)}</em>
+      }
+      return part
+    })
+  }
 
   // Scroll to bottom on new messages
   useEffect(() => {
@@ -95,16 +110,16 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-4 sm:right-6 z-50 flex items-center gap-2 bg-mauve hover:bg-mauve-dark text-cream px-4 py-3 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 animate-fade-slide-up"
-        style={{ fontFamily: 'Inter, sans-serif' }}
+        className="fixed bottom-6 right-4 sm:right-6 z-50 inline-flex items-center justify-center gap-2 bg-mauve hover:bg-mauve-dark text-cream pl-4 pr-5 py-3 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 animate-fade-slide-up"
+        style={{ fontFamily: 'Inter, sans-serif', lineHeight: 1 }}
       >
         {/* Chat bubble icon */}
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
           />
         </svg>
-        <span className="text-sm font-medium">Ask Blair</span>
+        <span className="text-sm font-medium leading-none">Ask Blair AI</span>
       </button>
     )
   }
@@ -127,7 +142,7 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
       {/* Header */}
       <div className="bg-burgundy-light px-4 py-3 flex items-center justify-between border-b border-mauve/20 flex-shrink-0">
         <div>
-          <h3 className="font-heading text-cream text-lg leading-tight">Ask Blair</h3>
+          <h3 className="font-heading text-cream text-lg leading-tight">Ask Blair AI</h3>
           {!isPaid && (
             <p className="text-cream/40 text-[11px] font-body mt-0.5">
               {questionsUsed}/{maxFreeQuestions} questions used
@@ -162,14 +177,14 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
                   : 'bg-burgundy-light/50 text-cream/90 rounded-bl-sm'
               }`}
             >
-              {msg.content}
+              {msg.role === 'assistant' ? renderMessageText(msg.content) : msg.content}
             </div>
           </div>
         ))}
         {isLoading && (
           <div className="flex justify-start">
             <div className="bg-burgundy-light/50 px-3 py-2.5 rounded-xl rounded-bl-sm">
-              <span className="text-mauve text-[13px] sm:text-sm animate-pulse-mauve">Blair is typing...</span>
+              <span className="text-mauve text-[13px] sm:text-sm animate-pulse-mauve">Blair AI is thinking...</span>
             </div>
           </div>
         )}

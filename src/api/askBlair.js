@@ -26,6 +26,7 @@ RULES:
 - You do NOT do full audits in chat — if someone asks for a detailed breakdown, redirect them: "For a full breakdown, run this through the audit tool above — that's where I really go in."
 - First person, coaching energy. Direct but warm.
 - Give specific, actionable advice — not generic tips.
+- CRITICAL FORMATTING: Do NOT use any markdown formatting like **bold**, *italics*, bullet points, numbered lists, or headers. Write in plain conversational text only — like you're texting a friend. Use dashes or commas to separate ideas if needed, never asterisks or markdown syntax.
 ${contextBlock}`
 
   // Build messages array with history

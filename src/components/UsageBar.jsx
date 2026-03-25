@@ -4,7 +4,7 @@ import React from 'react'
  * UsageBar — persistent top bar showing usage for free users.
  * Paid users see "Unlocked ✦" in mauve. Includes history link and sign out.
  */
-export default function UsageBar({ isPaid, auditCount, askBlairCount, maxFreeAudits = 3, maxFreeQuestions = 15, onSignOut, onHistory }) {
+export default function UsageBar({ isPaid, auditCount, askBlairCount, maxFreeAudits = 3, maxFreeQuestions = 5, onSignOut, onHistory }) {
   if (isPaid) {
     return (
       <div className="w-full bg-burgundy-dark/50 border-b border-mauve/10 px-4 py-2 flex items-center justify-between">

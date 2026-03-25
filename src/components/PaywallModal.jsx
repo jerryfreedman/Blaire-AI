@@ -21,7 +21,7 @@ export default function PaywallModal({ type = 'audit', onUpgrade, onClose }) {
           <h2 className="font-heading text-heading-2 text-cream mb-4">
             {isAudit
               ? "You've used your 3 free audits."
-              : "You've used your 15 free questions."
+              : "You've used your 5 free questions."
             }
           </h2>
           <p className="text-cream/70 font-body text-sm leading-relaxed mb-8">

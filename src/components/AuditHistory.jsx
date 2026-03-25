@@ -15,6 +15,7 @@ function getScoreColor(score) {
 }
 
 const AUDIT_TYPE_LABELS = {
+  bio: 'Instagram Bio',
   caption: 'Instagram Caption',
   hook: 'Hook (Reel/TikTok)',
   profile: 'Profile Grid',

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
 import OrnateButton from './OrnateButton'
+import FirstTimeTooltip from './FirstTimeTooltip'
 
 const AUDIT_TYPES = [
   { value: 'bio', label: 'Instagram Bio' },
@@ -10,7 +11,7 @@ const AUDIT_TYPES = [
   { value: 'video_script', label: 'Video Script / TikTok Script' },
 ]
 
-export default function AuditForm({ onSubmit, isLoading }) {
+export default function AuditForm({ onSubmit, isLoading, showTooltip = false }) {
   const [auditType, setAuditType] = useState('bio')
   const [content, setContent] = useState('')
   const [imageFile, setImageFile] = useState(null)
@@ -82,22 +83,27 @@ export default function AuditForm({ onSubmit, isLoading }) {
           >
             What are we auditing?
           </label>
-          <select
-            id="audit-type"
-            value={auditType}
-            onChange={(e) => {
-              setAuditType(e.target.value)
-              setContent('')
-              removeImage()
-            }}
-            className="w-full px-4 py-3 rounded text-cream bg-burgundy/80 border border-mauve/30 font-body text-sm focus:border-mauve focus:outline-none"
-          >
-            {AUDIT_TYPES.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.label}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              id="audit-type"
+              value={auditType}
+              onChange={(e) => {
+                setAuditType(e.target.value)
+                setContent('')
+                removeImage()
+              }}
+              className="w-full px-4 py-3 rounded text-cream bg-burgundy/80 border border-mauve/30 font-body text-sm focus:border-mauve focus:outline-none"
+            >
+              {AUDIT_TYPES.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
+
+            {/* First-time tooltip pointing at the dropdown */}
+            {showTooltip && <FirstTimeTooltip />}
+          </div>
         </div>
 
         {/* Content Input — text area or image upload based on type */}
@@ -217,12 +223,12 @@ export default function AuditForm({ onSubmit, isLoading }) {
             disabled={!canSubmit || isLoading}
             variant="filled"
           >
-            {isLoading ? 'Blair is reviewing your content...' : 'Run My Audit'}
+            {isLoading ? 'Blair AI is auditing your content...' : 'Run My Audit'}
           </OrnateButton>
 
           {isLoading && (
             <p className="mt-4 text-sm text-mauve animate-pulse-mauve font-body italic">
-              Blair is reviewing your content...
+              Blair AI is auditing your content...
             </p>
           )}
         </div>

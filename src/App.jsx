@@ -10,7 +10,6 @@ import PaywallModal from './components/PaywallModal'
 import UsageBar from './components/UsageBar'
 import ResetPassword from './components/ResetPassword'
 import Onboarding from './components/Onboarding'
-import FirstTimeTooltip from './components/FirstTimeTooltip'
 import LandingPage from './components/LandingPage'
 import AuditHistory from './components/AuditHistory'
 import StripeSuccess from './components/StripeSuccess'
@@ -18,7 +17,7 @@ import { runAudit } from './api/audit'
 import { supabase } from './lib/supabase'
 
 const MAX_FREE_AUDITS = 3
-const MAX_FREE_QUESTIONS = 15
+const MAX_FREE_QUESTIONS = 5
 
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || ''
 const STRIPE_PRICE_ID = import.meta.env.VITE_STRIPE_PRICE_ID || ''
@@ -376,20 +375,11 @@ function MainApp() {
             />
           ) : (
             <div className="animate-fade-slide-up">
-              {/* First-time tooltip wraps the form */}
-              <div className="relative">
-                <AuditForm
-                  onSubmit={handleAuditSubmit}
-                  isLoading={isLoading}
-                />
-                {user && profile?.onboarding_complete && (
-                  <div className="absolute top-0 left-0 w-full" style={{ pointerEvents: 'none' }}>
-                    <div className="relative" style={{ pointerEvents: 'auto' }}>
-                      <FirstTimeTooltip />
-                    </div>
-                  </div>
-                )}
-              </div>
+              <AuditForm
+                onSubmit={handleAuditSubmit}
+                isLoading={isLoading}
+                showTooltip={!!(user && profile?.onboarding_complete)}
+              />
             </div>
           )}
         </div>
