@@ -1,0 +1,170 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Base Styles ─── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background-color: #2a0008;
+  color: #f5f0e8;
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Typography ─── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* ─── Ornate Button Component ─── */
+.btn-ornate {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 2rem;
+  background-color: transparent;
+  border: 1px solid #c4857a;
+  color: #f5f0e8;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-ornate:hover {
+  background-color: rgba(196, 133, 122, 0.12);
+  border-color: #e8b4a8;
+  transform: translateY(-1px);
+}
+
+.btn-ornate:active {
+  transform: translateY(0);
+}
+
+.btn-ornate .flourish-left,
+.btn-ornate .flourish-right {
+  display: inline-block;
+  color: #c4857a;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.btn-ornate .flourish-right {
+  transform: scaleX(-1);
+}
+
+/* Filled variant */
+.btn-ornate-filled {
+  background-color: rgba(196, 133, 122, 0.15);
+  border-color: #c4857a;
+}
+
+.btn-ornate-filled:hover {
+  background-color: rgba(196, 133, 122, 0.25);
+}
+
+/* ─── Custom Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2a0008;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4857a;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e8b4a8;
+}
+
+/* ─── Form Elements ─── */
+select,
+textarea,
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  background-color: rgba(245, 240, 232, 0.06);
+  border: 1px solid rgba(196, 133, 122, 0.3);
+  color: #f5f0e8;
+  font-family: 'Inter', sans-serif;
+  border-radius: 4px;
+  transition: border-color 0.3s ease;
+}
+
+select:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  outline: none;
+  border-color: #c4857a;
+  box-shadow: 0 0 0 2px rgba(196, 133, 122, 0.15);
+}
+
+select option {
+  background-color: #2a0008;
+  color: #f5f0e8;
+}
+
+textarea::placeholder,
+input::placeholder {
+  color: rgba(245, 240, 232, 0.4);
+}
+
+/* ─── File Upload ─── */
+.file-upload-area {
+  border: 2px dashed rgba(196, 133, 122, 0.3);
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.file-upload-area:hover {
+  border-color: #c4857a;
+  background-color: rgba(196, 133, 122, 0.05);
+}
+
+.file-upload-area.has-file {
+  border-color: #c4857a;
+  border-style: solid;
+  background-color: rgba(196, 133, 122, 0.08);
+}
+
+/* ─── Animations ─── */
+@keyframes pulse-mauve {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-mauve {
+  animation: pulse-mauve 2s ease-in-out infinite;
+}
+
+/* ─── Mobile Optimizations ─── */
+@media (max-width: 480px) {
+  .btn-ornate {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+  }
+}
