@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import OrnateButton from './OrnateButton'
 import ShareableScoreCard from './ShareableScoreCard'
+import RewriteTeaser from './RewriteTeaser'
 
 /**
  * ResultsDisplay — Full audit results screen.
@@ -125,7 +126,7 @@ function CategoryBar({ name, score, delay = 0 }) {
   )
 }
 
-export default function ResultsDisplay({ results, onAuditAgain }) {
+export default function ResultsDisplay({ results, onAuditAgain, isPaid, auditType, originalContent, userContext, onUpgrade }) {
   const [showShareCard, setShowShareCard] = useState(false)
   const [copied, setCopied] = useState(false)
   const signOff = SIGN_OFFS[Math.floor(Math.random() * SIGN_OFFS.length)]
@@ -223,6 +224,18 @@ export default function ResultsDisplay({ results, onAuditAgain }) {
           </div>
         ))}
       </div>
+
+      {/* Rewrite Teaser — between action items and sign-off */}
+      {originalContent && (
+        <RewriteTeaser
+          isPaid={isPaid}
+          auditType={auditType}
+          originalContent={originalContent}
+          auditResult={results}
+          userContext={userContext}
+          onUpgrade={onUpgrade}
+        />
+      )}
 
       {/* Sign-off */}
       <div

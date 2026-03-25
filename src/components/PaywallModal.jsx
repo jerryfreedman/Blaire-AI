@@ -19,14 +19,18 @@ export default function PaywallModal({ type = 'audit', onUpgrade, onClose }) {
 
           {/* Blair's copy */}
           <h2 className="font-heading text-heading-2 text-cream mb-4">
-            {isAudit
+            {type === 'audit'
               ? "You've used your 3 free audits."
+              : type === 'rewrite'
+              ? "Rewrites are a Pro feature."
               : "You've used your 5 free questions."
             }
           </h2>
           <p className="text-cream/70 font-body text-sm leading-relaxed mb-8">
-            {isAudit
+            {type === 'audit'
               ? "You're clearly not messing around — I love that. Let's keep going. Upgrade to get unlimited audits, unlimited Ask Blair questions, and my full feedback on every piece of content you create."
+              : type === 'rewrite'
+              ? "You got the audit — now let me show you exactly how I'd rewrite it. Upgrade and I'll rework your weakest area into something ready to post. Unlimited audits, unlimited rewrites, unlimited Ask Blair."
               : "I can tell you're serious about your content — that's exactly the energy I love. Upgrade to keep the conversation going with unlimited questions and full audits."
             }
           </p>
