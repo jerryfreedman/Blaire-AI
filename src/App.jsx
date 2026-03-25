@@ -45,8 +45,6 @@ function MainApp() {
   // Audit state
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState(null)
-  const [lastAuditType, setLastAuditType] = useState(null)
-  const [lastOriginalContent, setLastOriginalContent] = useState(null)
   const [error, setError] = useState(null)
   const [transitioning, setTransitioning] = useState(false) // crossfade between form ↔ results
 
@@ -253,8 +251,6 @@ function MainApp() {
     setIsLoading(true)
     setError(null)
     setResults(null)
-    setLastAuditType(auditType)
-    setLastOriginalContent(content)
 
     try {
       const userContext = profile?.user_context || null
@@ -389,14 +385,6 @@ function MainApp() {
                 <ResultsDisplay
                   results={results}
                   onAuditAgain={handleAuditAgain}
-                  isPaid={isPaid}
-                  auditType={lastAuditType}
-                  originalContent={lastOriginalContent}
-                  userContext={profile?.user_context || null}
-                  onUpgrade={() => {
-                    setPaywallType('rewrite')
-                    setShowPaywall(true)
-                  }}
                 />
               </div>
             ) : (
