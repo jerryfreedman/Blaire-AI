@@ -13,6 +13,7 @@ import Onboarding from './components/Onboarding'
 import LandingPage from './components/LandingPage'
 import AuditHistory from './components/AuditHistory'
 import StripeSuccess from './components/StripeSuccess'
+import Settings from './components/Settings'
 import { runAudit } from './api/audit'
 import { supabase } from './lib/supabase'
 
@@ -45,6 +46,7 @@ function MainApp() {
   const [isLoading, setIsLoading] = useState(false)
   const [results, setResults] = useState(null)
   const [error, setError] = useState(null)
+  const [transitioning, setTransitioning] = useState(false) // crossfade between form ↔ results
 
   // Check auth on mount
   useEffect(() => {
@@ -253,8 +255,13 @@ function MainApp() {
     try {
       const userContext = profile?.user_context || null
       const result = await runAudit(auditType, content, imageBase64, userContext)
-      setResults(result)
       console.log('Audit complete:', result)
+
+      // Crossfade: fade out form, then show results
+      setTransitioning(true)
+      await new Promise(r => setTimeout(r, 350)) // wait for fade-out animation
+      setResults(result)
+      setTransitioning(false)
       window.scrollTo({ top: 0, behavior: 'smooth' })
 
       // Increment count + log audit
@@ -268,9 +275,12 @@ function MainApp() {
     }
   }
 
-  const handleAuditAgain = () => {
+  const handleAuditAgain = async () => {
+    setTransitioning(true)
+    await new Promise(r => setTimeout(r, 350))
     setResults(null)
     setError(null)
+    setTransitioning(false)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -347,6 +357,7 @@ function MainApp() {
           maxFreeQuestions={MAX_FREE_QUESTIONS}
           onSignOut={handleSignOut}
           onHistory={() => navigate('/history')}
+          onSettings={() => navigate('/settings')}
         />
       )}
 
@@ -367,21 +378,25 @@ function MainApp() {
             </div>
           )}
 
-          {/* Results or Audit Form */}
-          {results ? (
-            <ResultsDisplay
-              results={results}
-              onAuditAgain={handleAuditAgain}
-            />
-          ) : (
-            <div className="animate-fade-slide-up">
-              <AuditForm
-                onSubmit={handleAuditSubmit}
-                isLoading={isLoading}
-                showTooltip={!!(user && profile?.onboarding_complete)}
-              />
-            </div>
-          )}
+          {/* Results or Audit Form — with crossfade transition */}
+          <div className={transitioning ? 'animate-fade-out-down' : ''}>
+            {results ? (
+              <div className={!transitioning ? 'animate-fade-in-up' : ''}>
+                <ResultsDisplay
+                  results={results}
+                  onAuditAgain={handleAuditAgain}
+                />
+              </div>
+            ) : (
+              <div className={!transitioning ? 'animate-fade-in-up' : ''}>
+                <AuditForm
+                  onSubmit={handleAuditSubmit}
+                  isLoading={isLoading}
+                  showTooltip={!!(user && profile?.onboarding_complete)}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
@@ -487,6 +502,7 @@ export default function App() {
         <Route path="/" element={<LandingWrapper />} />
         <Route path="/app" element={<MainApp />} />
         <Route path="/history" element={<AuditHistory />} />
+        <Route path="/settings" element={<Settings />} />
         <Route path="/success" element={<StripeSuccess />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>

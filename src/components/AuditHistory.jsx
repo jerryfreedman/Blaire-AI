@@ -77,12 +77,24 @@ export default function AuditHistory() {
           {loading ? (
             <p className="text-center text-mauve font-body text-sm animate-pulse-mauve">Loading your audits...</p>
           ) : audits.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-cream/50 font-body text-sm mb-6">
-                No audits yet. Run your first audit and it'll show up here.
+            <div className="text-center py-16 px-6 animate-fade-slide-up">
+              {/* Empty state icon */}
+              <div className="mb-6">
+                <span className="text-mauve/40 text-5xl">✦</span>
+              </div>
+
+              <h2 className="font-heading text-heading-3 text-cream mb-3">
+                No audits yet
+              </h2>
+              <p className="text-cream/50 font-body text-sm leading-relaxed mb-2 max-w-sm mx-auto">
+                This is where all your audit scores and action items live. Once you run your first one, I'll save everything here so you can track your progress.
               </p>
+              <p className="text-mauve/70 font-body text-sm italic mb-8">
+                — Blair AI
+              </p>
+
               <OrnateButton onClick={() => navigate('/app')} variant="filled">
-                Run an Audit
+                Run Your First Audit
               </OrnateButton>
             </div>
           ) : (

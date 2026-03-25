@@ -7,11 +7,29 @@ import { askBlair } from '../api/askBlair'
  * Expands into 300×400 chat panel.
  * Handles mobile keyboard via visualViewport.
  */
+const CHAT_STORAGE_KEY = 'blair_ai_chat_history'
+const WELCOME_MESSAGE = { role: 'assistant', content: "Hey! I'm Blair AI — your content strategist. Ask me anything about hooks, captions, what to post, or growing your brand. I'll keep it real." }
+
+function loadChatHistory() {
+  try {
+    const saved = sessionStorage.getItem(CHAT_STORAGE_KEY)
+    if (saved) {
+      const parsed = JSON.parse(saved)
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed
+    }
+  } catch (e) { /* ignore */ }
+  return [WELCOME_MESSAGE]
+}
+
+function saveChatHistory(messages) {
+  try {
+    sessionStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages))
+  } catch (e) { /* ignore */ }
+}
+
 export default function AskBlairWidget({ userContext = null, askBlairCount = 0, isPaid = false, maxFreeQuestions = 5, onQuestionAsked }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [messages, setMessages] = useState([
-    { role: 'assistant', content: "Hey! I'm Blair AI — your content strategist. Ask me anything about hooks, captions, what to post, or growing your brand. I'll keep it real." }
-  ])
+  const [messages, setMessages] = useState(loadChatHistory)
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [viewportOffset, setViewportOffset] = useState(0)
@@ -36,6 +54,11 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
       return part
     })
   }
+
+  // Persist messages to sessionStorage on change
+  useEffect(() => {
+    saveChatHistory(messages)
+  }, [messages])
 
   // Scroll to bottom on new messages
   useEffect(() => {
