@@ -60,7 +60,7 @@ export default function ResetPassword() {
 
       // Redirect after 3 seconds
       setTimeout(() => {
-        window.location.href = '/'
+        window.location.href = '/app'
       }, 3000)
     } catch (err) {
       console.error('Password reset error:', err)

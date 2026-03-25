@@ -3,12 +3,41 @@ import OrnateButton from './OrnateButton'
 import { supabase } from '../lib/supabase'
 
 /**
+ * Translate Supabase error messages to friendly Blair-voice messages.
+ */
+function friendlyError(message) {
+  const lower = (message || '').toLowerCase()
+  if (lower.includes('rate limit') || lower.includes('too many requests') || lower.includes('email rate limit exceeded'))
+    return "Slow down, babe — too many attempts. Wait a minute and try again."
+  if (lower.includes('invalid login credentials') || lower.includes('invalid email or password'))
+    return "That email/password combo isn't matching up. Double check and try again."
+  if (lower.includes('user already registered') || lower.includes('already been registered'))
+    return "Looks like you already have an account with that email. Try signing in instead."
+  if (lower.includes('invalid email'))
+    return "That doesn't look like a valid email. Double check the spelling?"
+  if (lower.includes('password') && lower.includes('least'))
+    return "Password needs to be at least 6 characters. Make it a good one."
+  if (lower.includes('email not confirmed'))
+    return "Check your inbox for a confirmation email, then try signing in again."
+  if (lower.includes('signup is disabled'))
+    return "Signups are temporarily paused. Try again in a few minutes."
+  return message || "Something went wrong. Try again in a moment."
+}
+
+/**
+ * Basic client-side email validation.
+ */
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+/**
  * AuthModal — sign in / sign up modal.
  * BE RICH aesthetic: burgundy background, cream inputs, mauve CTA.
  * Supports: sign up (with pre-filled email), sign in, forgot password.
  */
 export default function AuthModal({ mode: initialMode = 'signup', prefillEmail = '', prefillName = '', onSuccess, onClose }) {
-  const [mode, setMode] = useState(initialMode) // 'signup' | 'signin' | 'forgot'
+  const [mode, setMode] = useState(initialMode)
   const [email, setEmail] = useState(prefillEmail)
   const [password, setPassword] = useState('')
   const [name, setName] = useState(prefillName)
@@ -19,8 +48,14 @@ export default function AuthModal({ mode: initialMode = 'signup', prefillEmail =
   const handleSignUp = async (e) => {
     e.preventDefault()
     if (!email.trim() || !password.trim()) return
+
+    if (!isValidEmail(email.trim())) {
+      setError("That doesn't look like a valid email. Double check the spelling?")
+      return
+    }
+
     if (password.length < 6) {
-      setError('Password must be at least 6 characters.')
+      setError('Password needs to be at least 6 characters. Make it a good one.')
       return
     }
 
@@ -37,7 +72,7 @@ export default function AuthModal({ mode: initialMode = 'signup', prefillEmail =
       })
 
       if (signUpError) {
-        setError(signUpError.message)
+        setError(friendlyError(signUpError.message))
         return
       }
 
@@ -60,10 +95,19 @@ export default function AuthModal({ mode: initialMode = 'signup', prefillEmail =
         }
       }
 
-      onSuccess(data.user)
+      // Check if Supabase returned a session (email confirmation is off)
+      // or just a user with no session (email confirmation is on)
+      if (data.session) {
+        onSuccess(data.user)
+      } else if (data.user && !data.session) {
+        // Email confirmation is likely on
+        setMessage("Check your inbox and confirm your email to get started.")
+      } else {
+        onSuccess(data.user)
+      }
     } catch (err) {
       console.error('Sign up error:', err)
-      setError('Something went wrong. Please try again.')
+      setError('Something went wrong. Try again in a moment.')
     } finally {
       setIsSubmitting(false)
     }
@@ -72,6 +116,11 @@ export default function AuthModal({ mode: initialMode = 'signup', prefillEmail =
   const handleSignIn = async (e) => {
     e.preventDefault()
     if (!email.trim() || !password.trim()) return
+
+    if (!isValidEmail(email.trim())) {
+      setError("That doesn't look like a valid email. Double check the spelling?")
+      return
+    }
 
     setIsSubmitting(true)
     setError('')
@@ -83,14 +132,14 @@ export default function AuthModal({ mode: initialMode = 'signup', prefillEmail =
       })
 
       if (signInError) {
-        setError(signInError.message)
+        setError(friendlyError(signInError.message))
         return
       }
 
       onSuccess(data.user)
     } catch (err) {
       console.error('Sign in error:', err)
-      setError('Something went wrong. Please try again.')
+      setError('Something went wrong. Try again in a moment.')
     } finally {
       setIsSubmitting(false)
     }
@@ -99,6 +148,11 @@ export default function AuthModal({ mode: initialMode = 'signup', prefillEmail =
   const handleForgotPassword = async (e) => {
     e.preventDefault()
     if (!email.trim()) return
+
+    if (!isValidEmail(email.trim())) {
+      setError("That doesn't look like a valid email. Double check the spelling?")
+      return
+    }
 
     setIsSubmitting(true)
     setError('')
@@ -111,14 +165,14 @@ export default function AuthModal({ mode: initialMode = 'signup', prefillEmail =
       )
 
       if (resetError) {
-        setError(resetError.message)
+        setError(friendlyError(resetError.message))
         return
       }
 
       setMessage('Check your email — we sent you a password reset link.')
     } catch (err) {
       console.error('Reset error:', err)
-      setError('Something went wrong. Please try again.')
+      setError('Something went wrong. Try again in a moment.')
     } finally {
       setIsSubmitting(false)
     }
@@ -127,7 +181,7 @@ export default function AuthModal({ mode: initialMode = 'signup', prefillEmail =
   return (
     <div className="fixed inset-0 z-40 bg-burgundy/95 flex items-center justify-center px-4">
       <div className="w-full max-w-md animate-fade-slide-up">
-        <div className="bg-burgundy-light/40 border border-mauve/20 rounded-xl p-8 md:p-10 backdrop-blur-sm">
+        <div className="bg-burgundy-light/40 border border-mauve/20 rounded-xl p-8 md:p-10 backdrop-blur-sm relative">
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="font-heading text-heading-2 text-cream mb-2">
@@ -171,7 +225,7 @@ export default function AuthModal({ mode: initialMode = 'signup', prefillEmail =
               <input
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { setEmail(e.target.value); setError('') }}
                 placeholder="you@example.com"
                 required
                 className="w-full px-4 py-3 rounded text-sm font-body"
@@ -186,7 +240,7 @@ export default function AuthModal({ mode: initialMode = 'signup', prefillEmail =
                 <input
                   type="password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); setError('') }}
                   placeholder={mode === 'signup' ? 'Create a password (6+ chars)' : 'Your password'}
                   required
                   className="w-full px-4 py-3 rounded text-sm font-body"

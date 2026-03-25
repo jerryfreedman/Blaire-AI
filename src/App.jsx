@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import Header from './components/Header'
 import AuditForm from './components/AuditForm'
 import ResultsDisplay from './components/ResultsDisplay'
@@ -9,13 +9,24 @@ import AuthModal from './components/AuthModal'
 import PaywallModal from './components/PaywallModal'
 import UsageBar from './components/UsageBar'
 import ResetPassword from './components/ResetPassword'
+import Onboarding from './components/Onboarding'
+import FirstTimeTooltip from './components/FirstTimeTooltip'
+import LandingPage from './components/LandingPage'
+import AuditHistory from './components/AuditHistory'
+import StripeSuccess from './components/StripeSuccess'
 import { runAudit } from './api/audit'
 import { supabase } from './lib/supabase'
 
 const MAX_FREE_AUDITS = 3
 const MAX_FREE_QUESTIONS = 15
 
+const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || ''
+const STRIPE_PRICE_ID = import.meta.env.VITE_STRIPE_PRICE_ID || ''
+
 function MainApp() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
   // Auth state
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
@@ -29,6 +40,7 @@ function MainApp() {
   const [capturedName, setCapturedName] = useState('')
   const [showPaywall, setShowPaywall] = useState(false)
   const [paywallType, setPaywallType] = useState('audit')
+  const [showOnboarding, setShowOnboarding] = useState(false)
 
   // Audit state
   const [isLoading, setIsLoading] = useState(false)
@@ -44,7 +56,7 @@ function MainApp() {
           setUser(session.user)
           await loadProfile(session.user.id)
         } else {
-          // No session — show email capture for new visitors
+          // Not authenticated — show email capture
           setShowEmailCapture(true)
         }
       } catch (err) {
@@ -76,6 +88,13 @@ function MainApp() {
     return () => subscription.unsubscribe()
   }, [])
 
+  // Check if onboarding needed after profile loads
+  useEffect(() => {
+    if (user && profile && !profile.onboarding_complete) {
+      setShowOnboarding(true)
+    }
+  }, [user, profile])
+
   const loadProfile = async (userId) => {
     try {
       const { data, error } = await supabase
@@ -86,7 +105,6 @@ function MainApp() {
 
       if (error) {
         console.error('Profile load error:', error)
-        // Profile might not exist yet — create it
         return
       }
 
@@ -129,9 +147,40 @@ function MainApp() {
     setShowEmailCapture(true)
   }
 
+  // Onboarding complete
+  const handleOnboardingComplete = async ({ niche, audience, goal }) => {
+    if (!user) return
+
+    const userContext = { niche, audience, goal }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        niche,
+        audience,
+        goal,
+        user_context: userContext,
+        onboarding_complete: true,
+      })
+      .eq('id', user.id)
+
+    if (!error) {
+      setProfile(prev => ({
+        ...prev,
+        niche,
+        audience,
+        goal,
+        user_context: userContext,
+        onboarding_complete: true,
+      }))
+    }
+
+    setShowOnboarding(false)
+  }
+
   // Check gating before audit
   const canRunAudit = () => {
-    if (!profile) return true // No profile yet, allow first audit
+    if (!profile) return true
     if (profile.is_paid) return true
     return (profile.audit_count || 0) < MAX_FREE_AUDITS
   }
@@ -166,6 +215,29 @@ function MainApp() {
     }
   }
 
+  // Log audit to Supabase audits table
+  const logAudit = async (auditType, result) => {
+    if (!user) return
+
+    try {
+      const { error } = await supabase
+        .from('audits')
+        .insert([{
+          user_id: user.id,
+          audit_type: auditType,
+          score: result.overall_score,
+          grade: result.letter_grade,
+          action_items: result.action_items,
+        }])
+
+      if (error) {
+        console.error('Audit log error:', error)
+      }
+    } catch (err) {
+      console.error('Audit log error:', err)
+    }
+  }
+
   // Handle audit submit
   const handleAuditSubmit = async ({ auditType, content, imageBase64 }) => {
     // Check gating
@@ -186,8 +258,9 @@ function MainApp() {
       console.log('Audit complete:', result)
       window.scrollTo({ top: 0, behavior: 'smooth' })
 
-      // Increment count
+      // Increment count + log audit
       await incrementAuditCount()
+      await logAudit(auditType, result)
     } catch (err) {
       console.error('Audit error:', err)
       setError(err.message || 'Something went wrong. Please try again.')
@@ -207,12 +280,47 @@ function MainApp() {
     incrementAskBlairCount()
   }
 
-  // Handle upgrade (placeholder)
-  const handleUpgrade = () => {
-    // Placeholder — Stripe integration in Session 5
-    console.log('Upgrade clicked — Stripe integration pending')
-    setShowPaywall(false)
-    alert('Payment integration coming soon! For now, enjoy your audits.')
+  // Handle Stripe upgrade
+  const handleUpgrade = async () => {
+    if (!STRIPE_PUBLISHABLE_KEY || !STRIPE_PRICE_ID) {
+      console.warn('Stripe not configured — set VITE_STRIPE_PUBLISHABLE_KEY and VITE_STRIPE_PRICE_ID in .env')
+      alert('Payment integration is being configured. Check back soon!')
+      setShowPaywall(false)
+      return
+    }
+
+    try {
+      // Load Stripe.js dynamically
+      const { loadStripe } = await import('@stripe/stripe-js')
+      const stripe = await loadStripe(STRIPE_PUBLISHABLE_KEY)
+
+      if (!stripe) {
+        throw new Error('Failed to load Stripe')
+      }
+
+      // Redirect to Stripe Checkout
+      const { error } = await stripe.redirectToCheckout({
+        lineItems: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
+        mode: 'subscription',
+        successUrl: `${window.location.origin}/success`,
+        cancelUrl: `${window.location.origin}/app`,
+        customerEmail: user?.email || profile?.email || undefined,
+      })
+
+      if (error) {
+        console.error('Stripe redirect error:', error)
+        alert('Something went wrong with the payment. Please try again.')
+      }
+    } catch (err) {
+      console.error('Stripe error:', err)
+      // If @stripe/stripe-js isn't installed, show a friendly message
+      if (err.message?.includes('Failed to fetch') || err.message?.includes('loadStripe')) {
+        alert('Payment integration is being configured. Check back soon!')
+      } else {
+        alert('Something went wrong. Please try again.')
+      }
+      setShowPaywall(false)
+    }
   }
 
   // Loading state
@@ -239,6 +347,7 @@ function MainApp() {
           maxFreeAudits={MAX_FREE_AUDITS}
           maxFreeQuestions={MAX_FREE_QUESTIONS}
           onSignOut={handleSignOut}
+          onHistory={() => navigate('/history')}
         />
       )}
 
@@ -267,10 +376,20 @@ function MainApp() {
             />
           ) : (
             <div className="animate-fade-slide-up">
-              <AuditForm
-                onSubmit={handleAuditSubmit}
-                isLoading={isLoading}
-              />
+              {/* First-time tooltip wraps the form */}
+              <div className="relative">
+                <AuditForm
+                  onSubmit={handleAuditSubmit}
+                  isLoading={isLoading}
+                />
+                {user && profile?.onboarding_complete && (
+                  <div className="absolute top-0 left-0 w-full" style={{ pointerEvents: 'none' }}>
+                    <div className="relative" style={{ pointerEvents: 'auto' }}>
+                      <FirstTimeTooltip />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -292,8 +411,13 @@ function MainApp() {
         onQuestionAsked={handleQuestionAsked}
       />
 
+      {/* Onboarding Modal */}
+      {showOnboarding && (
+        <Onboarding onComplete={handleOnboardingComplete} />
+      )}
+
       {/* Email Capture Modal */}
-      {showEmailCapture && (
+      {!showOnboarding && showEmailCapture && (
         <EmailCapture
           onComplete={handleEmailCaptured}
           onSignInClick={handleSignInClick}
@@ -301,7 +425,7 @@ function MainApp() {
       )}
 
       {/* Auth Modal */}
-      {showAuth && (
+      {!showOnboarding && showAuth && (
         <AuthModal
           mode={authMode}
           prefillEmail={capturedEmail}
@@ -326,12 +450,53 @@ function MainApp() {
   )
 }
 
+/**
+ * LandingWrapper — shows landing page for unauthenticated users,
+ * redirects to /app for authenticated users.
+ */
+function LandingWrapper() {
+  const [checking, setChecking] = useState(true)
+  const [hasSession, setHasSession] = useState(false)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (session?.user) {
+          setHasSession(true)
+          navigate('/app', { replace: true })
+        }
+      } catch (err) {
+        // Not authenticated
+      } finally {
+        setChecking(false)
+      }
+    }
+    check()
+  }, [navigate])
+
+  if (checking) {
+    return (
+      <div className="min-h-screen bg-burgundy flex items-center justify-center">
+        <p className="text-mauve font-body text-sm animate-pulse-mauve">Loading...</p>
+      </div>
+    )
+  }
+
+  if (hasSession) return null
+  return <LandingPage />
+}
+
 export default function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<LandingWrapper />} />
+        <Route path="/app" element={<MainApp />} />
+        <Route path="/history" element={<AuditHistory />} />
+        <Route path="/success" element={<StripeSuccess />} />
         <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/*" element={<MainApp />} />
       </Routes>
     </Router>
   )
