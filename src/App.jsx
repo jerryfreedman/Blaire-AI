@@ -402,14 +402,16 @@ function MainApp() {
         </p>
       </footer>
 
-      {/* Ask Blair Widget */}
-      <AskBlairWidget
-        userContext={profile?.user_context || null}
-        askBlairCount={askBlairCount}
-        isPaid={isPaid}
-        maxFreeQuestions={MAX_FREE_QUESTIONS}
-        onQuestionAsked={handleQuestionAsked}
-      />
+      {/* Ask Blair Widget — only for authenticated users */}
+      {user && profile && (
+        <AskBlairWidget
+          userContext={profile?.user_context || null}
+          askBlairCount={askBlairCount}
+          isPaid={isPaid}
+          maxFreeQuestions={MAX_FREE_QUESTIONS}
+          onQuestionAsked={handleQuestionAsked}
+        />
+      )}
 
       {/* Onboarding Modal */}
       {showOnboarding && (

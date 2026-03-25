@@ -24,7 +24,7 @@ export default function LandingPage() {
           {/* Headline */}
           <h1
             className="font-heading text-cream leading-tight mb-4 animate-fade-slide-up"
-            style={{ fontSize: 'clamp(2rem, 6vw, 3.2rem)', animationDelay: '0.1s', animationFillMode: 'both' }}
+            style={{ fontSize: 'clamp(2rem, 6vw, 3.2rem)', animationDelay: '0.1s' }}
           >
             Finally Know If Your Content Is Actually Working
           </h1>
@@ -32,7 +32,7 @@ export default function LandingPage() {
           {/* Subheadline */}
           <p
             className="text-cream/60 font-body text-base md:text-lg leading-relaxed mb-10 max-w-md mx-auto animate-fade-slide-up"
-            style={{ animationDelay: '0.2s', animationFillMode: 'both' }}
+            style={{ animationDelay: '0.2s' }}
           >
             Blair Richards' exact framework for auditing your Instagram, captions, hooks, and profile — in seconds.
           </p>
@@ -40,7 +40,7 @@ export default function LandingPage() {
           {/* Social proof stat bar */}
           <div
             className="flex items-center justify-center gap-4 md:gap-8 mb-12 animate-fade-slide-up"
-            style={{ animationDelay: '0.3s', animationFillMode: 'both' }}
+            style={{ animationDelay: '0.3s' }}
           >
             {[
               { value: '$3M+', label: 'Revenue' },
@@ -64,7 +64,7 @@ export default function LandingPage() {
           {/* Feature bullets */}
           <div
             className="text-left max-w-md mx-auto mb-12 space-y-4 animate-fade-slide-up"
-            style={{ animationDelay: '0.4s', animationFillMode: 'both' }}
+            style={{ animationDelay: '0.4s' }}
           >
             {FEATURES.map((feature, i) => (
               <div key={i} className="flex items-start gap-3">
@@ -81,7 +81,7 @@ export default function LandingPage() {
           {/* CTA */}
           <div
             className="animate-fade-slide-up"
-            style={{ animationDelay: '0.5s', animationFillMode: 'both' }}
+            style={{ animationDelay: '0.5s' }}
           >
             <OrnateButton onClick={() => navigate('/app')} variant="filled">
               Get Your Free Audit →
