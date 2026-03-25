@@ -41,9 +41,9 @@ export default function EmailCapture({ onComplete, onSignInClick }) {
   }
 
   return (
-    <div className="fixed inset-0 z-40 bg-burgundy/95 flex items-center justify-center px-4">
-      <div className="w-full max-w-md animate-fade-slide-up">
-        <div className="bg-burgundy-light/40 border border-mauve/20 rounded-xl p-8 md:p-10 backdrop-blur-sm">
+    <div className="fixed inset-0 z-40 bg-burgundy/95 flex items-center justify-center px-4 sm:px-6 overflow-y-auto">
+      <div className="w-full max-w-md animate-fade-slide-up my-auto py-6">
+        <div className="bg-burgundy-light/40 border border-mauve/20 rounded-xl p-6 sm:p-8 md:p-10 backdrop-blur-sm">
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="font-heading text-heading-1 text-cream mb-3">

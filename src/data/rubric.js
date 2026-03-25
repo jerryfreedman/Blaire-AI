@@ -10,6 +10,104 @@
  */
 
 const rubric = {
+  bio: {
+    id: 'bio',
+    label: 'Instagram Bio',
+    description: 'Audit your Instagram bio for clarity, conversion, and first-impression impact.',
+    criteria: [
+      {
+        name: 'Clarity & Positioning',
+        description: 'Does the bio instantly communicate who you are, what you do, and who you help?',
+        tiers: {
+          strong: {
+            range: [17, 20],
+            description: 'Crystal clear in under 3 seconds — a brand-new visitor immediately knows your niche, your audience, and the value you provide. No guessing required.'
+          },
+          average: {
+            range: [10, 16],
+            description: 'Gives a general idea but leaves room for confusion. A visitor might understand your niche but not why they should follow you specifically.'
+          },
+          weak: {
+            range: [0, 9],
+            description: 'Vague, confusing, or completely missing a clear positioning statement. A new visitor has no idea what you do or who you help.'
+          }
+        }
+      },
+      {
+        name: 'Value Proposition',
+        description: 'Does the bio answer "what\'s in it for me?" for your ideal follower?',
+        tiers: {
+          strong: {
+            range: [17, 20],
+            description: 'The bio makes a compelling promise — the ideal follower immediately sees what they\'ll gain by following. Benefits are clear and specific.'
+          },
+          average: {
+            range: [10, 16],
+            description: 'Some value hinted at but not explicit — the follower has to infer the benefit rather than seeing it stated clearly.'
+          },
+          weak: {
+            range: [0, 9],
+            description: 'No value proposition at all — the bio is about the creator with zero indication of what the follower gets out of it.'
+          }
+        }
+      },
+      {
+        name: 'Call to Action',
+        description: 'Is there a clear next step — a link, a freebie, a DM prompt, something to do?',
+        tiers: {
+          strong: {
+            range: [17, 20],
+            description: 'Strong, specific CTA that gives the visitor an immediate action — "Grab my free guide," "DM me STRATEGY," "Shop the collection." The link in bio matches the CTA.'
+          },
+          average: {
+            range: [10, 16],
+            description: 'CTA exists but is generic or buried — "Link below" without context, or no alignment between the CTA text and the actual link.'
+          },
+          weak: {
+            range: [0, 9],
+            description: 'No CTA at all — the bio just ends. No link prompt, no DM invitation, no reason to take any action after reading.'
+          }
+        }
+      },
+      {
+        name: 'Personality & Voice',
+        description: 'Does the bio feel like a real person with a distinct brand — not a generic template?',
+        tiers: {
+          strong: {
+            range: [17, 20],
+            description: 'The bio has personality — you can feel the brand energy, tone, and vibe. Uses signature language, emojis intentionally, or a format that feels uniquely theirs.'
+          },
+          average: {
+            range: [10, 16],
+            description: 'Decent but could belong to anyone in the same niche. No distinctive voice, phrasing, or brand personality coming through.'
+          },
+          weak: {
+            range: [0, 9],
+            description: 'Zero personality — reads like a LinkedIn summary or a generic template. No warmth, no energy, no reason to remember this person.'
+          }
+        }
+      },
+      {
+        name: 'Structure & Formatting',
+        description: 'Is the bio scannable, well-formatted, and optimized for mobile viewing?',
+        tiers: {
+          strong: {
+            range: [17, 20],
+            description: 'Clean formatting — intentional line breaks, strategic emoji use, easy to scan in 2-3 seconds on a phone. Every line serves a purpose.'
+          },
+          average: {
+            range: [10, 16],
+            description: 'Readable but could be tighter — some wasted space, inconsistent formatting, or too many emojis cluttering the message.'
+          },
+          weak: {
+            range: [0, 9],
+            description: 'Wall of text, emoji overload, or so sparse it looks unfinished. Difficult to scan quickly on mobile.'
+          }
+        }
+      }
+    ]
+  },
+
   caption: {
     id: 'caption',
     label: 'Instagram Caption',

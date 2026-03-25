@@ -35,7 +35,7 @@ export default function FirstTimeTooltip() {
       <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-mauve/90" />
       <div className="bg-mauve/90 backdrop-blur-sm rounded-lg px-4 py-3 shadow-lg">
         <p className="text-cream text-sm font-body leading-relaxed">
-          <span className="font-semibold">Start here →</span> Try auditing your Instagram bio first. It's the #1 thing I see holding girls back.
+          <span className="font-semibold">Start here →</span> I already set it to Instagram Bio for you. It's the #1 thing I see holding girls back — paste yours in and let's fix it.
         </p>
       </div>
     </div>

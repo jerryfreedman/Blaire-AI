@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import OrnateButton from './OrnateButton'
 
 const AUDIT_TYPES = [
+  { value: 'bio', label: 'Instagram Bio' },
   { value: 'caption', label: 'Instagram Caption' },
   { value: 'hook', label: 'Hook (Reel/TikTok opener)' },
   { value: 'profile', label: 'Profile Grid (screenshot)' },
@@ -10,7 +11,7 @@ const AUDIT_TYPES = [
 ]
 
 export default function AuditForm({ onSubmit, isLoading }) {
-  const [auditType, setAuditType] = useState('caption')
+  const [auditType, setAuditType] = useState('bio')
   const [content, setContent] = useState('')
   const [imageFile, setImageFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
@@ -179,6 +180,8 @@ export default function AuditForm({ onSubmit, isLoading }) {
               placeholder={
                 isVideoScriptType
                   ? 'Paste your video script or describe your concept...'
+                  : auditType === 'bio'
+                  ? 'Paste your Instagram bio here — include everything from your name line to your CTA...'
                   : auditType === 'hook'
                   ? 'Type or paste your hook...'
                   : auditType === 'concept'
@@ -188,6 +191,14 @@ export default function AuditForm({ onSubmit, isLoading }) {
               rows={6}
               className="w-full px-4 py-3 rounded text-sm font-body resize-vertical min-h-[120px]"
             />
+
+            {/* Bio helper note */}
+            {auditType === 'bio' && (
+              <p className="mt-3 text-sm text-dusty/80 font-body italic leading-relaxed">
+                Copy your full bio text — name line, tagline, CTA, everything. Blair will
+                audit it like she's seeing your profile for the first time.
+              </p>
+            )}
 
             {/* Video Script helper note */}
             {isVideoScriptType && (

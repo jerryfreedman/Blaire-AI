@@ -95,7 +95,7 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 bg-mauve hover:bg-mauve-dark text-cream px-4 py-3 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95"
+        className="fixed bottom-6 right-4 sm:right-6 z-50 flex items-center gap-2 bg-mauve hover:bg-mauve-dark text-cream px-4 py-3 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 animate-fade-slide-up"
         style={{ fontFamily: 'Inter, sans-serif' }}
       >
         {/* Chat bubble icon */}
@@ -115,11 +115,11 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
       className="fixed z-50 shadow-2xl flex flex-col"
       style={{
         bottom: `${24 + viewportOffset}px`,
-        right: '24px',
-        width: '300px',
-        height: '400px',
+        right: window.innerWidth <= 480 ? '0' : '16px',
+        width: window.innerWidth <= 480 ? '100%' : '320px',
+        height: window.innerWidth <= 480 ? `calc(100% - ${48 + viewportOffset}px)` : '420px',
         maxHeight: `calc(100vh - ${48 + viewportOffset}px)`,
-        borderRadius: '12px',
+        borderRadius: window.innerWidth <= 480 ? '16px 16px 0 0' : '12px',
         overflow: 'hidden',
         border: '1px solid rgba(196, 133, 122, 0.3)',
       }}
@@ -129,14 +129,15 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
         <div>
           <h3 className="font-heading text-cream text-lg leading-tight">Ask Blair</h3>
           {!isPaid && (
-            <p className="text-cream/40 text-xs font-body mt-0.5">
+            <p className="text-cream/40 text-[11px] font-body mt-0.5">
               {questionsUsed}/{maxFreeQuestions} questions used
             </p>
           )}
         </div>
         <button
           onClick={() => setIsOpen(false)}
-          className="text-cream/50 hover:text-cream transition-colors p-1"
+          className="text-cream/50 hover:text-cream transition-colors p-1.5 -mr-1"
+          aria-label="Close chat"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -146,7 +147,7 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
 
       {/* Messages */}
       <div
-        className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
+        className="flex-1 overflow-y-auto px-3 sm:px-4 py-3 space-y-3"
         style={{ backgroundColor: '#2a0008' }}
       >
         {messages.map((msg, i) => (
@@ -155,10 +156,10 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
             className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
-              className={`max-w-[85%] px-3 py-2 rounded-lg text-sm font-body leading-relaxed ${
+              className={`max-w-[85%] px-3 py-2.5 rounded-xl text-[13px] sm:text-sm font-body leading-relaxed ${
                 msg.role === 'user'
-                  ? 'bg-mauve/20 text-cream'
-                  : 'bg-burgundy-light/50 text-cream/90'
+                  ? 'bg-mauve/20 text-cream rounded-br-sm'
+                  : 'bg-burgundy-light/50 text-cream/90 rounded-bl-sm'
               }`}
             >
               {msg.content}
@@ -167,8 +168,8 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
         ))}
         {isLoading && (
           <div className="flex justify-start">
-            <div className="bg-burgundy-light/50 px-3 py-2 rounded-lg">
-              <span className="text-mauve text-sm animate-pulse-mauve">Blair is typing...</span>
+            <div className="bg-burgundy-light/50 px-3 py-2.5 rounded-xl rounded-bl-sm">
+              <span className="text-mauve text-[13px] sm:text-sm animate-pulse-mauve">Blair is typing...</span>
             </div>
           </div>
         )}
@@ -178,7 +179,7 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
       {/* Input */}
       <div className="px-3 py-3 border-t border-mauve/20 flex-shrink-0" style={{ backgroundColor: '#1a0005' }}>
         {atLimit ? (
-          <p className="text-center text-dusty text-xs font-body py-2">
+          <p className="text-center text-dusty text-[11px] sm:text-xs font-body py-2 leading-relaxed">
             You've used all {maxFreeQuestions} free questions. Upgrade to keep chatting with Blair.
           </p>
         ) : (
@@ -190,12 +191,13 @@ export default function AskBlairWidget({ userContext = null, askBlairCount = 0, 
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Ask me anything..."
-              className="flex-1 px-3 py-2 rounded text-sm font-body bg-burgundy/80 border border-mauve/20 text-cream placeholder-cream/30 focus:outline-none focus:border-mauve"
+              className="flex-1 px-3 py-2.5 rounded-lg text-[13px] sm:text-sm font-body bg-burgundy/80 border border-mauve/20 text-cream placeholder-cream/30 focus:outline-none focus:border-mauve"
             />
             <button
               onClick={handleSend}
               disabled={!input.trim() || isLoading}
-              className="bg-mauve hover:bg-mauve-dark disabled:opacity-40 text-cream px-3 py-2 rounded transition-colors flex-shrink-0"
+              className="bg-mauve hover:bg-mauve-dark disabled:opacity-40 text-cream px-3 py-2.5 rounded-lg transition-colors flex-shrink-0"
+              aria-label="Send message"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

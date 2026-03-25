@@ -162,20 +162,20 @@ export default function ResultsDisplay({ results, onAuditAgain }) {
     <div className="w-full max-w-xl mx-auto px-4 pb-8">
       {/* Score + Grade Row */}
       <div
-        className="flex items-center justify-center gap-6 md:gap-10 mb-8 animate-fade-slide-up"
+        className="flex items-center justify-center gap-5 sm:gap-6 md:gap-10 mb-8 animate-fade-slide-up"
       >
-        <CircularScore score={results.overall_score} size={140} />
+        <CircularScore score={results.overall_score} size={window.innerWidth <= 390 ? 120 : 140} />
         <div className="text-center">
           <span
             className="font-heading font-bold block leading-none"
             style={{
-              fontSize: '4.5rem',
+              fontSize: 'clamp(3rem, 10vw, 4.5rem)',
               color: getGradeColor(results.letter_grade)
             }}
           >
             {results.letter_grade}
           </span>
-          <span className="text-cream/40 text-xs font-body tracking-wider uppercase mt-1 block">
+          <span className="text-cream/40 text-[10px] sm:text-xs font-body tracking-wider uppercase mt-1 block">
             Overall Grade
           </span>
         </div>

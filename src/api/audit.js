@@ -5,7 +5,7 @@ const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY || ''
 /**
  * runAudit — calls Anthropic API (claude-sonnet-4-6) with Blair Richards persona.
  *
- * @param {string} auditType     — one of: caption, hook, profile, concept, video_script
+ * @param {string} auditType     — one of: bio, caption, hook, profile, concept, video_script
  * @param {string} userInput     — the text content to audit
  * @param {string|null} imageBase64 — base64-encoded image (for profile audits)
  * @param {object|null} userContext — { niche, audience, goal } from onboarding
@@ -30,6 +30,11 @@ export async function runAudit(auditType, userInput, imageBase64 = null, userCon
     ? `\n\nIMPORTANT CONTEXT: This creator is in the ${userContext.niche} space, targeting ${userContext.audience}, with a goal to ${userContext.goal}. Make your feedback specific to this context. Reference their niche in at least one action item. Tailor your language to their specific industry and audience.`
     : ''
 
+  // Bio specific instruction
+  const bioNote = auditType === 'bio'
+    ? `\n\nNOTE: This is an INSTAGRAM BIO REVIEW. You are evaluating the bio text — the name line, tagline, description, and CTA. Evaluate clarity of positioning, value proposition, call to action, personality/voice, and formatting/structure. This is the single most important piece of real estate on their profile — treat it that way. Be specific about what to change and exactly how to rewrite weak lines.`
+    : ''
+
   // Video script specific instruction
   const videoScriptNote = auditType === 'video_script'
     ? `\n\nNOTE: This is a PRE-FILM SCRIPT REVIEW. You are evaluating the script/concept text alone — not a finished video. Evaluate hook strength, pacing, clarity of message, call to action, and scroll-stopping potential based on the script text. Make clear in your feedback that this is a pre-film review and give direction on how to execute it when filming.`
@@ -48,6 +53,7 @@ SCORING RUBRIC — evaluate against these 5 criteria, scoring each 0-20:
 
 ${rubricText}
 ${contextBlock}
+${bioNote}
 ${videoScriptNote}
 
 INSTRUCTIONS:

@@ -9,9 +9,9 @@ export default function PaywallModal({ type = 'audit', onUpgrade, onClose }) {
   const isAudit = type === 'audit'
 
   return (
-    <div className="fixed inset-0 z-50 bg-burgundy/95 flex items-center justify-center px-4">
-      <div className="w-full max-w-md animate-fade-slide-up">
-        <div className="bg-burgundy-light/40 border border-mauve/20 rounded-xl p-8 md:p-10 backdrop-blur-sm text-center">
+    <div className="fixed inset-0 z-50 bg-burgundy/95 flex items-center justify-center px-4 sm:px-6 overflow-y-auto">
+      <div className="w-full max-w-md animate-fade-slide-up my-auto py-6">
+        <div className="bg-burgundy-light/40 border border-mauve/20 rounded-xl p-6 sm:p-8 md:p-10 backdrop-blur-sm text-center">
           {/* Icon */}
           <div className="mb-6">
             <span className="text-mauve text-4xl">✦</span>

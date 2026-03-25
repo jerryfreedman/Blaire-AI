@@ -173,6 +173,29 @@ input::placeholder {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
+
+  /* Tighten form padding on small screens */
+  select,
+  textarea,
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+}
+
+/* Small phone optimization (390px and below) */
+@media (max-width: 390px) {
+  .btn-ornate {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.8125rem;
+    gap: 0.5rem;
+  }
+
+  .btn-ornate .flourish-left,
+  .btn-ornate .flourish-right {
+    font-size: 0.875rem;
+  }
 }
 
 /* ─── Prevent body scroll when modals are open ─── */

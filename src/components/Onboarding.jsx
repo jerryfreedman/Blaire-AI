@@ -45,10 +45,10 @@ export default function Onboarding({ onComplete }) {
   }
 
   return (
-    <div className="fixed inset-0 z-40 bg-burgundy flex items-center justify-center px-4">
-      <div className="w-full max-w-md animate-fade-slide-up">
+    <div className="fixed inset-0 z-40 bg-burgundy flex items-center justify-center px-4 sm:px-6 overflow-y-auto">
+      <div className="w-full max-w-md animate-fade-slide-up my-auto py-6">
         {/* Progress bar */}
-        <div className="flex items-center gap-2 mb-8 px-4">
+        <div className="flex items-center gap-2 mb-6 sm:mb-8 px-2">
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex-1 h-1 rounded-full overflow-hidden bg-cream/10">
               <div
@@ -62,7 +62,7 @@ export default function Onboarding({ onComplete }) {
           ))}
         </div>
 
-        <div className="bg-burgundy-light/40 border border-mauve/20 rounded-xl p-8 md:p-10 backdrop-blur-sm">
+        <div className="bg-burgundy-light/40 border border-mauve/20 rounded-xl p-6 sm:p-8 md:p-10 backdrop-blur-sm">
           {/* Step 1: Niche */}
           {step === 1 && (
             <div className="animate-fade-slide-up" key="step1">

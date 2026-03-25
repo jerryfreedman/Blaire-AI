@@ -402,8 +402,8 @@ function MainApp() {
         </p>
       </footer>
 
-      {/* Ask Blair Widget — only for authenticated users */}
-      {user && profile && (
+      {/* Ask Blair Widget — only shown after onboarding is fully complete */}
+      {user && profile && profile.onboarding_complete && !showOnboarding && (
         <AskBlairWidget
           userContext={profile?.user_context || null}
           askBlairCount={askBlairCount}
